@@ -5,34 +5,21 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 21:55:30 by rache             #+#    #+#             */
-/*   Updated: 2024/07/25 22:30:19 by dopereir         ###   ########.fr       */
+/*   Created: 2024/09/06 21:29:34 by dopereir          #+#    #+#             */
+/*   Updated: 2024/09/06 22:26:46 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#define BUFFER_SIZE 42
 
-# include <stddef.h>
-# include <stdlib.h>
-# include <stdlib.h>
-
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 42
-# endif
-
-typedef struct s_file_info
-{
-	char				*buffer;
-	int					fd;
-	int					position;
-	int					b_readed;
-	struct s_file_info	*next;
-}		t_file_info;
-
-char		*get_next_line(int fd);
-t_file_info	*get_file_info(t_file_info **head, int fd);
-void		add_file_info(t_file_info **head, int fd);
-void		remove_file_info(t_file_info **head, int fd);
-
-#endif
+void	*ft_realloc(void *ptr, size_t size);
+void	*ft_memcpy(void *dest, const void *src, size_t n);
+void	*ft_memmove(void *dest, const void *src, size_t n);
+int		ft_strlen(char *str);
+char	*ft_strcat(char *dest, char *src);
+char	*get_next_line(int fd);

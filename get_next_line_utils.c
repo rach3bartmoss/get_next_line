@@ -3,69 +3,101 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rache <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/25 22:13:48 by rache             #+#    #+#             */
-/*   Updated: 2024/07/25 22:23:32 by rache            ###   ########.fr       */
+/*   Created: 2024/09/06 21:43:17 by dopereir          #+#    #+#             */
+/*   Updated: 2024/09/07 00:14:32 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-t_file_info	*get_file_info(t_file_info **head, int fd)
+int	ft_strlen(char *str)
 {
-	t_file_info	*current;
+	int	i;
 
-	current = *head;
-	while (current)
+	i = 0;
+	while (str[i])
 	{
-		if (current->fd == fd)
-			return (current);
-		current = current->next;
+		i++;
 	}
-	return (NULL);
+	return (i);
 }
 
-void	add_file_info(t_file_info **head, int fd)
+void	*ft_realloc(void *ptr, size_t size)
 {
-	t_file_info	*new_node;
+	char	*new;
+	size_t	minsize;
 
-	new_node = malloc(sizeof(t_file_info));
-	if (!new_node)
-		return ;
-	new_node->fd = fd;
-	new_node->buffer = malloc(BUFFER_SIZE + 1);
-	if (!new_node->buffer)
+	if (size == 0)
 	{
-		free(new_node);
-		return ;
+		free(ptr);
+		return (NULL);
 	}
-	new_node->position = 0;
-	new_node->b_readed = 0;
-	new_node->next = *head;
-	*head = new_node;
+	if (!ptr)
+		return (new = malloc(size));
+	minsize = ft_strlen(ptr);
+	if (size <= minsize)
+		return (ptr);
+	new = malloc(size);
+	if (!new)
+		return (NULL);
+	ft_memcpy(new, ptr, minsize + 1);
+	new[minsize] = '\0';
+	free(ptr);
+	return (new);
 }
 
-void	remove_file_info(t_file_info **head, int fd)
+void	*ft_memcpy(void *dest, const void *src, size_t n)
 {
-	t_file_info	*current;
-	t_file_info	*prev;
+	unsigned char	*tempsrc;
+	unsigned char	*tempdest;
 
-	current = *head;
-	prev = NULL;
-	while (current)
+	tempsrc = (unsigned char *)src;
+	tempdest = (unsigned char *)dest;
+	while (n--)
 	{
-		if (current->fd == fd)
-		{
-			if (prev)
-				prev->next = current->next;
-			else
-				*head = current->next;
-			free(current->buffer);
-			free(current);
-			return ;
-		}
-		prev = current;
-		current = current->next;
+		*tempdest++ = *tempsrc++;
 	}
+	return (dest);
+}
+
+void	*ft_memmove(void *dest, const void *src, size_t n)
+{
+	char	*d;
+	char	*s;
+
+	d = (char *)dest;
+	s = (char *)src;
+	if (!dest && !src)
+		return (NULL);
+	if (s < d && d < s + n)
+	{
+		d = d + n - 1;
+		s = s + n - 1;
+		while (n--)
+			*d-- = *s--;
+	}
+	else
+		while (n--)
+			*d++ = *s++;
+	return (dest);
+}
+
+char	*ft_strcat(char *dest, char *src)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (dest[i] != '\0')
+		i++;
+	j = 0;
+	while (src[j] != '\0')
+	{
+		dest[i + j] = src[j];
+		j++;
+	}
+	dest[i + j] = '\0';
+	return (dest);
 }

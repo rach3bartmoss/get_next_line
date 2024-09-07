@@ -5,109 +5,109 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 22:30:19 by rache             #+#    #+#             */
-/*   Updated: 2024/07/25 22:57:02 by dopereir         ###   ########.fr       */
+/*   Created: 2024/09/06 21:08:43 by dopereir          #+#    #+#             */
+/*   Updated: 2024/09/07 00:39:32 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <string.h>
-#include <unistd.h>
 
-static char	*resize_line_buffer(char *line, int new_size)
+int	find_newline_eof(char *buffer)/*Newline found, return its position*/
 {
-	char	*new_line;
+	int	i;
 
-	new_line = realloc(line, new_size);
-	if (!new_line)
+	i = 0;
+	if (!buffer)
+		return (-1);
+	while (buffer[i])
+	{
+		if (buffer[i] == '\n')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+// No newline found
+
+char	*expand_buffer(char *buffer, size_t new_size)//resize the chunk
+{
+	char	*new_buffer;
+
+	new_buffer = ft_realloc(buffer, new_size + 1);
+	if (!new_buffer)
+		return (NULL);
+	return (new_buffer);
+}
+
+char	*extract_line(char **buffer, int newline_index)//extract line from buf
+{
+	char	*line;
+	int		rem_len;
+
+	if (newline_index == -1)
+		newline_index = ft_strlen(*buffer);
+	line = malloc(newline_index + 1);
+	if (!line)
+		return (NULL);
+	ft_memcpy(line, *buffer, newline_index);
+	line[newline_index] = '\0';
+	if ((*buffer)[newline_index] == '\n')
+		newline_index++;
+	rem_len = ft_strlen(*buffer + newline_index);
+	ft_memmove(*buffer, *buffer + newline_index, rem_len + 1);
+	*buffer = ft_realloc(*buffer, rem_len + 1);
+	if (!*buffer)
 	{
 		free(line);
 		return (NULL);
 	}
-	return (new_line);
+	return (line);
 }
 
-static char	*read_next_block(t_file_info *file, int *b_written)
+int	read_chunk(int fd, char **buffer) //reads a piece(chunk), a dym alloc space
 {
-	int		j;
-	char	*line;
+	char	temp_buffer[BUFFER_SIZE + 1];
+	int		bytes_read;
+	char	*new_buffer;
 
-	line = malloc(BUFFER_SIZE + 1);
-	if (!line)
-		return (NULL);
-	j = 0;
-	while (1)
-	{
-		if (file->position >= file->b_readed)
-		{
-			file->b_readed = read(file->fd, file->buffer,
-					BUFFER_SIZE);
-			if (file->b_readed <= 0)
-				break ;
-			file->position = 0;
-		}
-		line[j++] = file->buffer[file->position++];
-		if (file->buffer[file->position - 1] == '\n'
-				|| file->buffer[file->position - 1] == '\0')
-			break ;
-		if (j >= BUFFER_SIZE)
-		{
-			line = resize_line_buffer(line, j + BUFFER_SIZE + 1);
-			if (!line)
-				return (NULL);
-		}
-	}
-	line[j] = '\0';
-	*b_written = j;
-	return (line);
+	bytes_read = read(fd, temp_buffer, BUFFER_SIZE);
+	if (bytes_read <= 0)
+		return (bytes_read);
+	temp_buffer[bytes_read] = '\0';
+	new_buffer = expand_buffer(*buffer, ft_strlen(*buffer) + bytes_read);
+	if (!new_buffer)
+		return (-1);
+	*buffer = new_buffer;
+	ft_strcat(*buffer, temp_buffer);
+	return (bytes_read);
 }
 
 char	*get_next_line(int fd)
 {
-	static t_file_info	*file_list;
-	t_file_info			*file;
-	int					bytes_written;
-	char				*line;
+	static char	*buffer;
+	char		*line;
+	int			newline_index;
 
-	file_list = NULL;
-	file = get_file_info(&file_list, fd);
-	bytes_written = 0;
-	line = read_next_block(file, &bytes_written);
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!file)
+	if (!buffer)
 	{
-		add_file_info(&file_list, fd);
-		file = get_file_info(&file_list, fd);
+		buffer = malloc(1);
+		if (!buffer)
+			return (NULL);
+		buffer[0] = '\0';
 	}
-	if (file->b_readed <= 0 && bytes_written == 0)
+	newline_index = find_newline_eof(buffer);
+	while (newline_index == -1)
 	{
-		free(line);
-		remove_file_info(&file_list, fd);
-		return (NULL);
+		if (read_chunk(fd, &buffer) <= 0)
+			break ;
+		newline_index = find_newline_eof(buffer);
 	}
-	return (line);
+	if (!buffer[0])
+	{
+		free(buffer);
+		return (buffer = NULL);
+	}
+	return (line = extract_line(&buffer, newline_index));
 }
-/*int main(int argc, char **argv)
-{
-	if (argc != 2)
-	{
-		write(2, "Usage: ./program filename\n", 26);
-		return 1;
-	}
-	
-	int fd = open(argv[1], O_RDONLY);
-	if (fd == -1)
-	{
-		write(2, "Error opening file\n", 19);
-		return 1;
-	}
-	char *line;
-	while ((line = get_next_line(fd)))
-	{
-		write(1, line, strlen(line));
-		free(line);
-	}
-	close(fd);
-	return 0;
-}*/
