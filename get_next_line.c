@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 21:08:43 by dopereir          #+#    #+#             */
-/*   Updated: 2024/09/07 00:39:32 by dopereir         ###   ########.fr       */
+/*   Updated: 2024/09/07 15:26:11 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,16 +98,13 @@ char	*get_next_line(int fd)
 		buffer[0] = '\0';
 	}
 	newline_index = find_newline_eof(buffer);
-	while (newline_index == -1)
-	{
-		if (read_chunk(fd, &buffer) <= 0)
-			break ;
+	while (newline_index == -1 && read_chunk(fd, &buffer) > 0)
 		newline_index = find_newline_eof(buffer);
-	}
 	if (!buffer[0])
 	{
 		free(buffer);
-		return (buffer = NULL);
+		buffer = NULL;
+		return (NULL);
 	}
 	return (line = extract_line(&buffer, newline_index));
 }
