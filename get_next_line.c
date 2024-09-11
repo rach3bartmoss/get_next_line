@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 21:08:43 by dopereir          #+#    #+#             */
-/*   Updated: 2024/09/07 15:26:11 by dopereir         ###   ########.fr       */
+/*   Updated: 2024/09/11 00:36:34 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,24 @@
 int	find_newline_eof(char *buffer)/*Newline found, return its position*/
 {
 	int	i;
-
+	int	test = 0;
 	i = 0;
 	if (!buffer)
+	{
+		test = -1;
+		printf("check if !buffer, returned value = %d\n", test);
 		return (-1);
+	}
 	while (buffer[i])
 	{
 		if (buffer[i] == '\n')
+		{
+			printf("found new line at position: %d\n", i);
 			return (i);
+		}
 		i++;
 	}
+	printf("enter neither of checks, returns -1\n");
 	return (-1);
 }
 // No newline found
@@ -33,7 +41,7 @@ char	*expand_buffer(char *buffer, size_t new_size)//resize the chunk
 {
 	char	*new_buffer;
 
-	new_buffer = ft_realloc(buffer, new_size + 1);
+	new_buffer = ft_realloc(buffer, ft_strlen(buffer), new_size + 1);
 	if (!new_buffer)
 		return (NULL);
 	return (new_buffer);
@@ -55,7 +63,7 @@ char	*extract_line(char **buffer, int newline_index)//extract line from buf
 		newline_index++;
 	rem_len = ft_strlen(*buffer + newline_index);
 	ft_memmove(*buffer, *buffer + newline_index, rem_len + 1);
-	*buffer = ft_realloc(*buffer, rem_len + 1);
+	*buffer = ft_realloc(*buffer, ft_strlen(*buffer), rem_len + 1);
 	if (!*buffer)
 	{
 		free(line);
@@ -90,17 +98,11 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!buffer)
-	{
-		buffer = malloc(1);
-		if (!buffer)
-			return (NULL);
-		buffer[0] = '\0';
-	}
-	newline_index = find_newline_eof(buffer);
+	buffer = malloc(BUFFER_SIZE + 1);
+	newline_index = -1;
 	while (newline_index == -1 && read_chunk(fd, &buffer) > 0)
 		newline_index = find_newline_eof(buffer);
-	if (!buffer[0])
+	if (!buffer[0] && buffer[0] != '\n')
 	{
 		free(buffer);
 		buffer = NULL;
