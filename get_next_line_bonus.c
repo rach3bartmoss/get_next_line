@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 15:35:05 by dopereir          #+#    #+#             */
-/*   Updated: 2024/09/15 12:31:28 by dopereir         ###   ########.fr       */
+/*   Updated: 2024/09/15 22:40:10 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,7 @@ char	*get_next_line(int fd)
 		buffer[fd] = NULL;
 		return (NULL);
 	}
-	line = extract_line(&buffer[fd], newline_index);
-	return (line);
+	return (line = extract_line(&buffer[fd], newline_index));
 }
 
 /*#define NUM_FILES 3
