@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BUFFER_SIZE 42
+//#define BUFFER_SIZE 42
 
 void	*ft_realloc(void *ptr, size_t oldsize, size_t size);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
