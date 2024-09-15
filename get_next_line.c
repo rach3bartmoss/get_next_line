@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 21:08:43 by dopereir          #+#    #+#             */
-/*   Updated: 2024/09/15 02:12:38 by dopereir         ###   ########.fr       */
+/*   Updated: 2024/09/15 12:27:05 by rache            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int	read_newpiece(int fd, char **buffer)
 	if (!new_buffer)
 		return (-1);
 	*buffer = new_buffer;
-	strncat(*buffer, current_buffer, bytes_readed);
+	ft_strncat(*buffer, current_buffer, bytes_readed);
 	return (bytes_readed);
 }
 

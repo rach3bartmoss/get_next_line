@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 15:35:05 by dopereir          #+#    #+#             */
-/*   Updated: 2024/09/15 02:33:03 by dopereir         ###   ########.fr       */
+/*   Updated: 2024/09/15 12:31:28 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int	read_newpiece(int fd, char **buffer)
 	if (!new_buffer)
 		return (-1);
 	*buffer = new_buffer;
-	strncat(*buffer, current_buffer, bytes_readed);
+	ft_strncat(*buffer, current_buffer, bytes_readed);
 	return (bytes_readed);
 }
 
@@ -122,7 +122,8 @@ char	*get_next_line(int fd)
 		buffer[fd] = NULL;
 		return (NULL);
 	}
-	return (line = extract_line(&buffer[fd], newline_index));
+	line = extract_line(&buffer[fd], newline_index);
+	return (line);
 }
 
 /*#define NUM_FILES 3
