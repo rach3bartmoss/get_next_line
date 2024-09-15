@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/06 21:43:17 by dopereir          #+#    #+#             */
-/*   Updated: 2024/09/07 00:14:32 by dopereir         ###   ########.fr       */
+/*   Updated: 2024/09/12 00:59:05 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,13 @@ int	ft_strlen(char *str)
 
 	i = 0;
 	while (str[i])
-	{
 		i++;
-	}
 	return (i);
 }
 
-void	*ft_realloc(void *ptr, size_t size)
+void	*ft_realloc(void *ptr, size_t oldsize, size_t size)
 {
-	char	*new;
+	void	*new;
 	size_t	minsize;
 
 	if (size == 0)
@@ -34,16 +32,17 @@ void	*ft_realloc(void *ptr, size_t size)
 		free(ptr);
 		return (NULL);
 	}
-	if (!ptr)
-		return (new = malloc(size));
-	minsize = ft_strlen(ptr);
-	if (size <= minsize)
-		return (ptr);
+	if (ptr == NULL)
+		return (malloc(size));
 	new = malloc(size);
 	if (!new)
 		return (NULL);
-	ft_memcpy(new, ptr, minsize + 1);
-	new[minsize] = '\0';
+	minsize = size;
+	if (oldsize < size)
+		minsize = oldsize;
+	ft_memcpy(new, ptr, minsize);
+	while (size - oldsize != 0)
+		((char *)new)[oldsize++] = '\0';
 	free(ptr);
 	return (new);
 }
@@ -84,20 +83,21 @@ void	*ft_memmove(void *dest, const void *src, size_t n)
 	return (dest);
 }
 
-char	*ft_strcat(char *dest, char *src)
+char	*ft_strncat(char *dest, char *src, unsigned int nb)
 {
-	int	i;
-	int	j;
+	unsigned int	i;
+	unsigned int	j;
 
 	i = 0;
+	j = 0;
 	while (dest[i] != '\0')
 		i++;
-	j = 0;
-	while (src[j] != '\0')
+	while (src[j] != '\0' && j < nb)
 	{
-		dest[i + j] = src[j];
+		dest[i] = src[j];
+		i++;
 		j++;
 	}
-	dest[i + j] = '\0';
+	dest[i] = '\0';
 	return (dest);
 }
